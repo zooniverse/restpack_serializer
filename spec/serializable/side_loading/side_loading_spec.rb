@@ -74,6 +74,10 @@ describe RestPack::Serializer::SideLoading do
       MyApp::AlbumSerializer.links["albums.artist"][:href].should == "/api/v2/artists/{albums.artist}"
       MyApp::AlbumSerializer.href_prefix = original
     end
+
+    it "should not include polymorphic belongs to" do
+      MyApp::GenericMetadatumSerializer.links.should == {}
+    end
   end
 
   describe "#filterable_by" do

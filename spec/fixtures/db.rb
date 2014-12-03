@@ -62,6 +62,12 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer :artist_id
     t.integer :stalker_id
   end
+
+  create_table "generic_metadata", force: true do |t|
+    t.integer :linked_id
+    t.string :linked_type
+    t.string :some_stuff_about_the_link
+  end
 end
 
 module MyApp
@@ -72,6 +78,8 @@ module MyApp
     has_many :songs
     has_many :payments
     has_many :fans, :through => :payments
+    has_many :generic_metadata, as: :linked
+    
     has_and_belongs_to_many :stalkers
   end
 
@@ -82,6 +90,7 @@ module MyApp
     belongs_to :artist
     has_many :songs
     has_many :album_reviews
+    has_many :generic_metadata, as: :linked
   end
 
   class AlbumReview < ActiveRecord::Base
@@ -94,6 +103,7 @@ module MyApp
 
     attr_accessible :title, :artist, :album
 
+    has_many :generic_metadata, as: :linked
     belongs_to :artist
     belongs_to :album
   end
@@ -108,11 +118,17 @@ module MyApp
   class Fan < ActiveRecord::Base
     attr_accessible :name
     has_many :payments
+    has_many :generic_metadata, as: :linked
     has_many :artists, :through => :albums
   end
 
   class Stalker < ActiveRecord::Base
     attr_accessible :name
     has_and_belongs_to_many :artists
+  end
+
+  class GenericMetadatum < ActiveRecord::Base
+    attr_accessible :some_stuff_about_the_link
+    belongs_to :linked, polymorphic: true
   end
 end

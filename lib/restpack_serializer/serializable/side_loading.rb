@@ -25,7 +25,7 @@ module RestPack::Serializer::SideLoading
 
     def links
       {}.tap do |links|
-        associations.each do |association|
+        associations.select { |association| !association.polymorphic? }.each do |association|
           if association.macro == :belongs_to
             link_key = "#{self.key}.#{association.name}"
             href = "/#{association.plural_name}/{#{link_key}}"
