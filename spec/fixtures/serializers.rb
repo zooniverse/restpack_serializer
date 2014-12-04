@@ -44,4 +44,10 @@ module MyApp
     include RestPack::Serializer
     attributes :id, :name
   end
+  
+  class GenericMetadatumSerializer
+    include RestPack::Serializer
+    attributes :id, :some_stuff_about_the_link
+    can_include :linked
+  end
 end

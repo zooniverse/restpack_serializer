@@ -29,7 +29,7 @@ module RestPack::Serializer::SideLoading
  
     def links
       {}.tap do |links|
-        associations.each do |association|
+        associations.select { |association| !association.polymorphic? }.each do |association|
           link_key = if association.macro == :belongs_to
             "#{key}.#{association.name}"
           elsif association.macro.to_s.match(/has_/)
