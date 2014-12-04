@@ -69,7 +69,22 @@ module RestPack
         data[:links] ||= {}
         links_value = case
         when association.macro == :belongs_to
-          model.send(association.foreign_key).try(:to_s)
+          if association.polymorphic?
+            linked_id = model.send(association.foreign_key)
+                        .try(:to_s)
+            linked_type = model.send(association.foreign_type)
+                          .try(:to_s)
+                          .demodulize
+                          .underscore
+                          .pluralize
+            {
+              href: "/#{linked_type}/#{linked_id}",
+              id: linked_id,
+              type: linked_type
+            }
+          else
+            model.send(association.foreign_key).try(:to_s)
+          end
         when association.macro.to_s.match(/has_/)
           if model.send(association.name).loaded?
             model.send(association.name).collect { |associated| associated.id.to_s }
