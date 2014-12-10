@@ -26,16 +26,16 @@ module RestPack::Serializer::SideLoading
         |include| include.try(:keys)|| include
       end
     end
- 
+
     def links
       {}.tap do |links|
-        associations.select { |association| !association.polymorphic? }.each do |association|
+        non_polymorphic_associations.each do |association|
           link_key = if association.macro == :belongs_to
             "#{key}.#{association.name}"
           elsif association.macro.to_s.match(/has_/)
             "#{key}.#{association.plural_name}"
           end
-          
+
           links.merge!(link_key => {
             :href => href_prefix + url_for_association(association),
             :type => association.plural_name.to_sym
@@ -54,13 +54,16 @@ module RestPack::Serializer::SideLoading
 
     private
 
+    def non_polymorphic_associations
+      associations.select do |association|
+        !association.polymorphic?
+      end
+    end
+
     def side_load(include, models, options)
       association = association_from_include(include)
       return {} unless supported_association?(association.macro)
-      serializer = serializer_from_association_class(association)
-      builder = RestPack::Serializer::SideLoadDataBuilder.new(association,
-                                                              models,
-                                                              serializer)
+      builder = RestPack::Serializer::SideLoadDataBuilder.new(association,models)
       builder.send("side_load_#{association.macro}")
     end
 
@@ -97,14 +100,14 @@ module RestPack::Serializer::SideLoading
     def url_from_association(association)
       serializer_from_association_class(association).url
     end
-    
+
     def url_for_association(association)
       identifier = if association.macro == :belongs_to
         "/{#{key}.#{association.name}}"
       else association.macro.to_s.match(/has_/)
         param = can_include_options(association)[:param] || "#{singular_key}_id"
         value = can_include_options(association)[:value] || "id"
-      
+
         "?#{param}={#{key}.#{value}}"
       end
 
