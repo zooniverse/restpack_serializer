@@ -53,7 +53,7 @@ describe RestPack::Serializer::Factory do
       unknown_serializer_class = "UnknownModelType"
       message = "Unknown serializer class: #{unknown_serializer_class}"
       expect do
-        factory.create(unknown_serializer_class).should
+        factory.create(unknown_serializer_class)
       end.to raise_error(RestPack::Serializer::UnknownSerializer, message)
     end
   end
