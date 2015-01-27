@@ -11,6 +11,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Model serialization, paging, side-loading and filtering}
   gem.summary       = %q{Model serialization, paging, side-loading and filtering}
   gem.homepage      = "https://github.com/RestPack"
+  gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
