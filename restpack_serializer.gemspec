@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["Gavin Joyce"]
   gem.email         = ["gavinjoyce@gmail.com"]
   gem.description   = %q{Model serialization, paging, side-loading and filtering}
-  gem.summary       = %q{Model serialization, paging, side-loading and filtering}
+  gem.summary       = %q{Model serialization, paging, side-loading and filtering, and OTHER THINGS!}
   gem.homepage      = "https://github.com/RestPack"
   gem.license       = "MIT"
 
