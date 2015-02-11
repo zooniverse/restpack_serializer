@@ -8,17 +8,16 @@ module RestPack
       end
 
       def side_load_belongs_to
-        side_loads = @models.map { |model| model.send(@association.name) }
-        json_model_data = side_loads.map do |model|
-          model_serializer(model).as_json(model)
-        end
+        foreign_keys = @models.map { |model| model.send(@association.foreign_key) }.uniq.compact
+        side_load = foreign_keys.any? ? @association.klass.find(foreign_keys) : []
+        json_model_data = side_load.map { |model| model_serializer(model).as_json(model) }
         { @association.plural_name.to_sym => json_model_data, meta: { } }
       end
 
       def side_load_has_many
         has_association_relation do |options|
           if join_table = @association.options[:through]
-            options.scope = options.scope.joins(join_table)
+            options.scope = options.scope.joins(join_table).distinct
             association_fk = @association.through_reflection.foreign_key.to_sym
             options.filters = { join_table => { association_fk => model_ids } }
           else
