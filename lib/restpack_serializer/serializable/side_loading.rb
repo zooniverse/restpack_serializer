@@ -79,7 +79,7 @@ module RestPack::Serializer::SideLoading
 
     def select_association_from_possibles(possible_relations)
       possible_relations.each do |relation|
-        if association = self.model_class.reflect_on_association(relation)
+        if association = self.model_class.reflect_on_association(relation.to_sym)
           return association
         end
       end
