@@ -16,5 +16,13 @@ module RestPack
     def self.setup
       yield @@config
     end
+
+    def self.select_association_serializer(association)
+      begin
+        RestPack::Serializer::Factory.create(association.name.to_s.classify)
+      rescue RestPack::Serializer::UnknownSerializer
+        RestPack::Serializer::Factory.create(association.class_name)
+      end
+    end
   end
 end

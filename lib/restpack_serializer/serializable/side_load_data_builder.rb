@@ -8,7 +8,7 @@ module RestPack
       end
 
       def side_load_belongs_to
-        side_loads = @models.map { |model| model.send(@association.name) }
+        side_loads = @models.map { |model| model.send(@association.name) }.compact
         json_model_data = side_loads.map do |model|
           model_serializer(model).as_json(model)
         end
@@ -18,7 +18,7 @@ module RestPack
       def side_load_has_many
         has_association_relation do |options|
           if join_table = @association.options[:through]
-            options.scope = options.scope.joins(join_table)
+            options.scope = options.scope.joins(join_table).distinct
             association_fk = @association.through_reflection.foreign_key.to_sym
             options.filters = { join_table => { association_fk => model_ids } }
           else
@@ -51,11 +51,11 @@ module RestPack
 
       def has_association_relation
         return {} if @models.empty?
-        serializer_class = RestPack::Serializer::Factory.create(@association.class_name).class
-        options = RestPack::Serializer::Options.new(serializer_class)
+        serializer = RestPack::Serializer.select_association_serializer(@association)
+        options = RestPack::Serializer::Options.new(serializer.class)
         yield options
         options.include_links = false
-        serializer_class.page_with_options(options)
+        serializer.class.page_with_options(options)
       end
     end
   end
