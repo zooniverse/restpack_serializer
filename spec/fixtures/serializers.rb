@@ -27,7 +27,7 @@ module MyApp
   class ArtistSerializer
     include RestPack::Serializer
     attributes :id, :name, :website
-    can_include :albums, :songs, :fans, :stalkers
+    can_include :albums, :songs, :fans, :stalkers, :data_items
   end
 
   class FanSerializer
@@ -40,11 +40,11 @@ module MyApp
     attributes :id, :name
   end
 
-  class ProducerSerializer 
+  class ProducerSerializer
     include RestPack::Serializer
     attributes :id, :name
   end
-  
+
   class GenericMetadatumSerializer
     include RestPack::Serializer
     attributes :id, :some_stuff_about_the_link

@@ -68,7 +68,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.string :name
     t.string :album
   end
-  
+
   create_table "generic_metadata", force: true do |t|
     t.integer :linked_id
     t.string :linked_type
@@ -85,7 +85,8 @@ module MyApp
     has_many :payments
     has_many :fans, :through => :payments
     has_many :generic_metadata, as: :linked
-    
+    has_many :data_items, class_name: "GenericMetadatum", as: :linked
+
     has_and_belongs_to_many :stalkers
   end
 
@@ -138,7 +139,7 @@ module MyApp
     attr_accessible :name
     belongs_to :album, foreign_key: :album
   end
-  
+
   class GenericMetadatum < ActiveRecord::Base
     attr_accessible :some_stuff_about_the_link
     belongs_to :linked, polymorphic: true

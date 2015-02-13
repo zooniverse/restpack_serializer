@@ -84,7 +84,7 @@ describe RestPack::Serializer::SideLoading do
       MyApp::AlbumSerializer.links["albums.producers"][:href].should == "/prods?album={albums.title}"
       MyApp::ProducerSerializer.url("producers")
     end
-    
+
     it "should not include polymorphic belongs to" do
       MyApp::GenericMetadatumSerializer.links.should == {}
     end
@@ -104,6 +104,47 @@ describe RestPack::Serializer::SideLoading do
     context "a model with multiple :belongs_to relations" do
       it "is filterable by primary key and foreign keys" do
         MyApp::SongSerializer.filterable_by.should =~ [:id, :artist_id, :album_id, :title]
+      end
+    end
+  end
+
+  describe "sideloading the inverse polymorphic relation custom serialiser" do
+
+    let(:artist) { FactoryGirl.create(:artist) }
+    let(:datum) { FactoryGirl.create(:generic_metadatum, linked: artist) }
+    let(:side_loads) do
+      options = RestPack::Serializer::Options.new(MyApp::ArtistSerializer, { "include" => "data_items" })
+      MyApp::ArtistSerializer.side_loads([artist], options)
+    end
+
+    context "when the specialised association serializer doesn't exist" do
+
+      it "should use the class name serializer" do
+        result = side_loads
+        expect(result[:meta][:generic_metadata]).to_not be_nil
+      end
+    end
+
+    context "when the association name serializer does exist" do
+      let!(:serialiser) do
+        class DataItemSerializer
+          include RestPack::Serializer
+          attributes :id, :some_stuff_about_the_link
+          can_include :linked
+
+          def self.key
+            :data_items
+          end
+
+          def self.model_class
+            MyApp::GenericMetadatum
+          end
+        end
+      end
+
+      it "should use the association name serializer" do
+        result = side_loads
+        expect(result[:meta][:data_items]).to_not be_nil
       end
     end
   end

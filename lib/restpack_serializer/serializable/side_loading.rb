@@ -97,10 +97,6 @@ module RestPack::Serializer::SideLoading
         ":#{include} is not a valid include for #{self.model_class}"
     end
 
-    def url_from_association(association)
-      serializer_from_association_class(association).url
-    end
-
     def url_for_association(association)
       identifier = case association.macro
       when :belongs_to, :has_one
@@ -111,16 +107,13 @@ module RestPack::Serializer::SideLoading
 
         "?#{param}={#{key}.#{value}}"
       end
-
-      "/#{url_from_association(association)}#{identifier}"
+      serializer = RestPack::Serializer.select_association_serializer(association)
+      url_from_association = serializer.class.url
+      "/#{url_from_association}#{identifier}"
     end
 
     def can_include_options(association)
       @can_include_options.fetch(association.name.to_sym, {})
-    end
-
-    def serializer_from_association_class(association)
-      RestPack::Serializer::Factory.create(association.class_name)
     end
   end
 end
