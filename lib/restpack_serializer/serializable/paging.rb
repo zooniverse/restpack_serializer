@@ -20,9 +20,10 @@ module RestPack::Serializer::Paging
         includes = options.include.select do |include|
           linkable_types.include?(include)
         end.map do |include|
-          association_from_include(include).class_name
+          association_from_include(include)
         end
-        Array(RestPack::Serializer::Factory.create(*includes)).each do |serializer|
+        includes.map do |assocation|
+          serializer = RestPack::Serializer.select_association_serializer(assocation)
           result.links.merge! serializer.class.links
         end
       end
