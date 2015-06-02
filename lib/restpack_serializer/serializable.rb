@@ -67,14 +67,35 @@ module RestPack
     def add_links(model, data)
       self.class.associations.each do |association|
         data[:links] ||= {}
-        links_value = case
-        when association.macro == :belongs_to
-          model.send(association.foreign_key).try(:to_s)
-        when association.macro.to_s.match(/has_/)
-          if model.send(association.name).loaded?
-            model.send(association.name).collect { |associated| associated.id.to_s }
+        links_value = case association.macro
+        when :belongs_to
+          if association.polymorphic?
+            linked_id = model.send(association.foreign_key)
+                        .try(:to_s)
+            linked_type = model.send(association.foreign_type)
+                          .try(:to_s)
+                          .demodulize
+                          .underscore
+                          .pluralize
+            {
+              href: "/#{linked_type}/#{linked_id}",
+              id: linked_id,
+              type: linked_type
+            }
           else
-            model.send(association.name).pluck(:id).map(&:to_s)
+            model.send(association.foreign_key).try(:to_s)
+          end
+        when :has_one
+          model.send(association.name).try(:id).try(:to_s)
+        else
+          sorting = @context.fetch(:sort_links, { })[association.name.to_s]
+          query = model.send association.name
+          query = query.order(sorting) if sorting
+          
+          if query.loaded?
+            query.collect { |associated| associated.id.to_s }
+          else
+            query.pluck(:id).map(&:to_s)
           end
         end
         unless links_value.blank?
