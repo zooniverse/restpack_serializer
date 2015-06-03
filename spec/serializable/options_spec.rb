@@ -86,6 +86,35 @@ describe RestPack::Serializer::Options do
     end
   end
 
+  context 'with linked sorting parameters' do
+    let(:subject) { RestPack::Serializer::Options.new(MyApp::ArtistSerializer, params, scope) }
+
+    describe 'with no params' do
+      let(:params) { { } }
+      it { subject.linked_sorting.should == {} }
+    end
+    describe 'with a sorting value' do
+      let(:params) { { 'sort_linked_songs' => 'title' } }
+      it { subject.linked_sorting['songs'].should == { title: :asc } }
+      it { subject.linked_sorting_as_url_params.should == 'sort_linked_songs=title' }
+    end
+    describe 'with a descending sorting value' do
+      let(:params) { { 'sort_linked_songs' => '-title' } }
+      it { subject.linked_sorting['songs'].should == { title: :desc } }
+      it { subject.linked_sorting_as_url_params.should == 'sort_linked_songs=-title' }
+    end
+    describe 'with multiple sorting values' do
+      let(:params) { { 'sort_linked_songs' => '-Title,ID' } }
+      it { subject.linked_sorting['songs'].should == { title: :desc, id: :asc } }
+      it { subject.linked_sorting_as_url_params.should == 'sort_linked_songs=-title,id' }
+    end
+    describe 'with a not allowed sorting value' do
+      let(:params) { { 'sort_linked_songs' => '-title,album_id,id' } }
+      it { subject.linked_sorting['songs'].should == { title: :desc, id: :asc } }
+      it { subject.linked_sorting_as_url_params.should == 'sort_linked_songs=-title,id' }
+    end
+  end
+
   context 'scopes' do
     describe 'with default scope' do
       it { subject.scope.should == MyApp::Song.all }

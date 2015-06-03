@@ -32,10 +32,10 @@ module RestPack
 
     class InvalidInclude < Exception; end
 
-    def as_json(model, context = {})
+    def as_json(model, context = {}, options = nil)
       return if model.nil?
       if model.kind_of?(Array)
-        return model.map { |item| as_json(item, context) }
+        return model.map { |item| as_json(item, context, options) }
       end
 
       @model, @context = model, context
@@ -48,7 +48,7 @@ module RestPack
       end
 
       add_custom_attributes(data)
-      add_links(model, data)
+      add_links(model, data, options)
 
       Symbolizer.recursive_symbolize(data)
     end
@@ -64,7 +64,7 @@ module RestPack
       data.merge!(custom) if custom
     end
 
-    def add_links(model, data)
+    def add_links(model, data, options)
       self.class.associations.each do |association|
         data[:links] ||= {}
         links_value = case association.macro
@@ -88,10 +88,10 @@ module RestPack
         when :has_one
           model.send(association.name).try(:id).try(:to_s)
         else
-          sorting = @context.fetch(:sort_links, { })[association.name.to_s]
           query = model.send association.name
+          sorting = options.linked_sorting[association.name.to_s] if options
           query = query.order(sorting) if sorting
-          
+
           if query.loaded?
             query.collect { |associated| associated.id.to_s }
           else
@@ -112,19 +112,19 @@ module RestPack
     module ClassMethods
       attr_accessor :model_class, :href_prefix, :key
 
-      def array_as_json(models, context = {})
-        new.as_json(models, context)
+      def array_as_json(models, context = {}, options = nil)
+        new.as_json(models, context, options)
       end
 
-      def as_json(model, context = {})
-        new.as_json(model, context)
+      def as_json(model, context = {}, options = nil)
+        new.as_json(model, context, options)
       end
 
-      def serialize(models, context = {})
+      def serialize(models, context = {}, options = nil)
         models = [models] unless models.kind_of?(Array)
 
         {
-          self.key() => models.map {|model| self.as_json(model, context)}
+          self.key() => models.map {|model| self.as_json(model, context, options)}
         }
       end
 

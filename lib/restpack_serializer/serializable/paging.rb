@@ -33,7 +33,7 @@ module RestPack::Serializer::Paging
     private
 
     def serialize_page(page, options)
-      page.map { |model| self.as_json(model, options.context) }
+      page.map { |model| self.as_json(model, options.context, options) }
     end
 
     def serialize_meta(page, options)
@@ -64,6 +64,7 @@ module RestPack::Serializer::Paging
       params << "page_size=#{options.page_size}" unless options.default_page_size?
       params << "include=#{options.include.join(',')}" if options.include.any?
       params << options.sorting_as_url_params if options.sorting.any?
+      params << options.linked_sorting_as_url_params if options.linked_sorting.any?
       params << options.filters_as_url_params if options.filters.any?
 
       url += '?' + params.join('&') if params.any?

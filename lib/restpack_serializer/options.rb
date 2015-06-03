@@ -2,7 +2,7 @@ module RestPack::Serializer
   class Options
     attr_accessor :page, :page_size, :include, :filters, :serializer,
                   :model_class, :scope, :context, :include_links,
-                  :sorting, :key
+                  :sorting, :linked_sorting, :key
 
     def initialize(serializer, params = {}, scope = nil, context = {}, key = nil)
       params.symbolize_keys! if params.respond_to?(:symbolize_keys!)
@@ -12,6 +12,7 @@ module RestPack::Serializer
       @include = params[:include] ? params[:include].split(',') : []
       @filters = filters_from_params(params, serializer)
       @sorting = sorting_from_params(params, serializer)
+      @linked_sorting = linked_sorting_from_params(params)
       @serializer = serializer
       @model_class = serializer.model_class
       @scope = scope || model_class.send(:all)
@@ -43,6 +44,13 @@ module RestPack::Serializer
       "sort=#{sorting_values}"
     end
 
+    def linked_sorting_as_url_params
+      linked_sorting.each_pair.collect do |key, val|
+        sort_value = val.map{ |k, v| v == :asc ? k : "-#{ k }" }.join ','
+        "sort_linked_#{ key }=#{ sort_value }"
+      end.join '&'
+    end
+
     private
 
     def filters_from_params(params, serializer)
@@ -66,6 +74,29 @@ module RestPack::Serializer
         sorting_parameters[sort_value] = sort_order if serializer.serializable_sorting_attributes.include?(sort_value)
       end
       sorting_parameters
+    end
+
+    def linked_sorting_from_params(params)
+      return { } unless params.respond_to?(:select)
+      { }.tap do |linked_sorting|
+        params.select{ |key, val| key =~ /\Asort_linked/ }.each_pair do |type, values|
+          begin
+            type = type.to_s.match(/\Asort_linked_(.*)$/)[1]
+            linked_serializer = RestPack::Serializer.class_map[type.singularize]
+            next unless linked_serializer
+            sortable = linked_serializer.serializable_sorting_attributes
+            ordering = values.split(',').collect do |value|
+              direction = value =~ /\A\-/ ? :desc : :asc
+              value = value.downcase.gsub(/\A\-/, '')
+              next unless sortable.include?(value.to_sym)
+              [value.to_sym, direction]
+            end.flatten.compact
+
+            linked_sorting[type] = Hash[*ordering] if ordering.any?
+          rescue
+          end
+        end
+      end
     end
 
     def map_filter_ids(key,value)

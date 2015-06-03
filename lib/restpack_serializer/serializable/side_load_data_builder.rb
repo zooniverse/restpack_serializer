@@ -2,10 +2,11 @@ module RestPack
   module Serializer
     class SideLoadDataBuilder
 
-      def initialize(association, models, serializer)
+      def initialize(association, models, serializer, options)
         @association = association
         @models = models
         @serializer = serializer
+        @options = options
       end
 
       def side_load_belongs_to
@@ -18,6 +19,7 @@ module RestPack
       def side_load_has_many
         has_association_relation do |options|
           options.key = @association.name
+          options.sorting = linked_sorting
           if join_table = @association.options[:through]
             options.scope = options.scope.joins(join_table).group "#{options.scope.table_name}.id"
             association_fk = @association.through_reflection.foreign_key.to_sym
@@ -30,6 +32,7 @@ module RestPack
 
       def side_load_has_and_belongs_to_many
         has_association_relation do |options|
+          options.sorting = linked_sorting
           join_table_name = @association.join_table
           join_clause = "join #{join_table_name} on #{@association.klass.table_name }.id = #{join_table_name}.#{@association.class_name.foreign_key}"
           options.scope = options.scope.joins(join_clause)
@@ -39,6 +42,11 @@ module RestPack
       end
 
       private
+
+      def linked_sorting
+        return { } unless @options
+        @options.linked_sorting[@association.name.to_s] || { }
+      end
 
       def model_ids
         @models.map(&:id)
