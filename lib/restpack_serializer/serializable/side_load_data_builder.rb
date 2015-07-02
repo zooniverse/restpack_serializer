@@ -21,7 +21,9 @@ module RestPack
           options.key = @association.name
           options.sorting = linked_sorting
           if join_table = @association.options[:through]
-            options.scope = options.scope.joins(join_table).group "#{options.scope.table_name}.id"
+            table_name = "\"#{ options.scope.table_name }\""
+            distinct_on = "distinct on(#{ table_name }.id) #{ table_name }.*"
+            options.scope = options.scope.joins(join_table).select distinct_on
             association_fk = @association.through_reflection.foreign_key.to_sym
             options.filters = { join_table => { association_fk => model_ids } }
           else
