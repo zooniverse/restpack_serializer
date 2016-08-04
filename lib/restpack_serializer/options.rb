@@ -55,6 +55,7 @@ module RestPack::Serializer
 
     def filters_from_params(params, serializer)
       filters = {}
+      return filters unless params.is_a?(Hash)
       serializer.filterable_by.each do |filter|
         [filter, "#{filter}s".to_sym].each do |key|
           next unless params.has_key?(key)
