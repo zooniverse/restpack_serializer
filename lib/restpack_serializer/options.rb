@@ -57,7 +57,12 @@ module RestPack::Serializer
       filters = {}
       serializer.filterable_by.each do |filter|
         [filter, "#{filter}s".to_sym].each do |key|
-          filters[filter] = params[key].to_s.split(',') if params[key]
+          next unless params.has_key?(key)
+          filters[filter] = if [nil, '', 'null'].include?(params[key])
+            [nil]
+          else
+            params[key].to_s.split(',')
+          end
         end
       end
       filters
