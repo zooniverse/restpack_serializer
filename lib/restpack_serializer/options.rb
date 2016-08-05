@@ -7,6 +7,7 @@ module RestPack::Serializer
     def initialize(serializer, params = {}, scope = nil, context = {}, key = nil)
       params.symbolize_keys! if params.respond_to?(:symbolize_keys!)
 
+      @model_class = serializer.model_class
       @page = params[:page] ? params[:page].to_i : 1
       @page_size = params[:page_size] ? params[:page_size].to_i : RestPack::Serializer.config.page_size
       @include = params[:include] ? params[:include].split(',') : []
@@ -14,7 +15,6 @@ module RestPack::Serializer
       @sorting = sorting_from_params(params, serializer)
       @linked_sorting = linked_sorting_from_params(params)
       @serializer = serializer
-      @model_class = serializer.model_class
       @scope = scope || model_class.send(:all)
       @context = context
       @include_links = true
@@ -59,10 +59,12 @@ module RestPack::Serializer
       serializer.filterable_by.each do |filter|
         [filter, "#{filter}s".to_sym].each do |key|
           next unless params.has_key?(key)
-          filters[filter] = if [nil, '', 'null'].include?(params[key])
-            [nil]
+          if [nil, ''].include?(params[key])
+            # filter `?key` and `?key=` with sensible null values
+            value = blank_filter_for key
+            filters[filter] = value if value
           else
-            params[key].to_s.split(',')
+            filters[filter] = params[key].to_s.split(',')
           end
         end
       end
@@ -122,6 +124,24 @@ module RestPack::Serializer
           value.each { |k, v| value[k] = query_to_array(v) }
         else
           value
+      end
+    end
+
+    def blank_filter_for(key)
+      column = model_class.column_for_attribute key
+      return unless column
+
+      # Filter all nullable columns by null
+      return [nil] if column.null
+
+      case column.type
+      when :integer, :float, :decimal
+        [0]
+      when :string, :text
+        ['']
+      else
+        # Don't try to filter columns without a sensible non-null value
+        nil
       end
     end
   end
