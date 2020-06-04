@@ -394,3 +394,10 @@ end
 
 `bundle`
 `rake spec`
+
+#### Using docker
+`docker-compose build`
+`docker-compose up`
+
+Or jump into the container for development:
+`docker-compose run --rm restpack bash`
