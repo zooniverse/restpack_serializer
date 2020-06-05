@@ -1,0 +1,11 @@
+version: '3'
+services:
+  restpack:
+    build:
+      context: .
+    volumes:
+      - ./:/restpack
+      - gem_cache:/usr/local/bundle
+
+volumes:
+  gem_cache:
