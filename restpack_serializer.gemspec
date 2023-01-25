@@ -25,10 +25,10 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'restpack_gem', '~> 0.0.9'
   gem.add_development_dependency 'rake', '~> 10.0.3'
   gem.add_development_dependency 'guard-rspec', '~> 2.5.4'
-  gem.add_development_dependency 'factory_girl', '~> 4.2.0'
-  gem.add_development_dependency 'sqlite3', '~> 1.3.7'
+  gem.add_development_dependency 'factory_girl'
+  gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'database_cleaner', '~> 1.0.1'
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'bump'
-  gem.add_development_dependency 'protected_attributes'
+  gem.add_development_dependency 'protected_attributes_continued'
 end
