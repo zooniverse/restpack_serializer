@@ -17,17 +17,17 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'activesupport', ['>= 4.0.3', '< 6.0']
-  gem.add_dependency 'activerecord', ['>= 4.0.3', '< 6.0']
+  gem.add_dependency 'activesupport', ['>= 5.0.0', '< 7.1']
+  gem.add_dependency 'activerecord', ['>= 5.0.0', '< 7.1']
   gem.add_dependency 'kaminari', '< 2.0'
 
   gem.add_development_dependency 'restpack_gem', '~> 0.0.9'
   gem.add_development_dependency 'rake', '~> 10.0.3'
   gem.add_development_dependency 'guard-rspec', '~> 2.5.4'
-  gem.add_development_dependency 'factory_girl', '~> 4.2.0'
-  gem.add_development_dependency 'sqlite3', '~> 1.3.7'
+  gem.add_development_dependency 'factory_girl'
+  gem.add_development_dependency 'sqlite3', '< 1.6'
   gem.add_development_dependency 'database_cleaner', '~> 1.0.1'
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'bump'
-  gem.add_development_dependency 'protected_attributes', '~> 1.0.5'
+  gem.add_development_dependency 'protected_attributes_continued'
 end
