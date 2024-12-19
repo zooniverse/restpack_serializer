@@ -143,7 +143,7 @@ describe RestPack::Serializer do
         let(:serializer) { MyApp::SongSerializer.new }
 
         it "includes 'links' data for :belongs_to associations" do
-          @album1 = FactoryGirl.create(:album_with_songs, song_count: 11)
+          @album1 = FactoryBot.create(:album_with_songs, song_count: 11)
           json = serializer.as_json(@album1.songs.first)
           json[:links].should == {
             artist: @album1.artist_id.to_s,
@@ -154,7 +154,7 @@ describe RestPack::Serializer do
       end
 
       context "with a serializer with has_* associations" do
-        let(:artist_factory) { FactoryGirl.create :artist_with_fans }
+        let(:artist_factory) { FactoryBot.create :artist_with_fans }
         let(:artist_serializer) { MyApp::ArtistSerializer.new }
         let(:json) { artist_serializer.as_json(artist_factory) }
         let(:side_load_ids) { artist_has_association.map {|obj| obj.id.to_s } }
@@ -179,7 +179,7 @@ describe RestPack::Serializer do
         end
 
         describe "'has_and_belongs_to_many' associations" do
-          let(:artist_factory) { FactoryGirl.create :artist_with_stalkers }
+          let(:artist_factory) { FactoryBot.create :artist_with_stalkers }
           let(:artist_has_association) { artist_factory.stalkers }
 
           it "includes 'links' data when there are associated records" do

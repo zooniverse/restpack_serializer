@@ -1,13 +1,13 @@
-require 'factory_girl'
+require 'factory_bot'
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :artist, :class => MyApp::Artist do
     sequence(:name) {|n| "Artist ##{n}" }
     sequence(:website) {|n| "http://website#{n}.com/" }
 
     factory :artist_with_albums do
-      ignore do
-        album_count 3
+      transient do
+        album_count { 3 }
       end
 
       after(:create) do |artist, evaluator|
@@ -16,18 +16,20 @@ FactoryGirl.define do
     end
 
     factory :artist_with_fans do
-      ignore do
-        fans_count 3
+      transient do
+        fans_count { 3 }
       end
+
       after(:create) do |artist, evaluator|
         create_list(:payment, evaluator.fans_count, artist: artist)
       end
     end
 
     factory :artist_with_stalkers do
-      ignore do
-        stalker_count 2
+      transient do
+        stalker_count { 2 }
       end
+
       after(:create) do |artist, evaluator|
         create_list(:stalker, evaluator.stalker_count, artists: [ artist ])
       end
@@ -40,8 +42,8 @@ FactoryGirl.define do
     artist
 
     factory :album_with_songs do
-      ignore do
-        song_count 10
+      transient do
+        song_count { 10 }
       end
 
       after(:create) do |album, evaluator|
@@ -57,7 +59,7 @@ FactoryGirl.define do
   end
 
   factory :payment, :class => MyApp::Payment do
-    amount 999
+    amount { 999 }
     artist
     fan
   end

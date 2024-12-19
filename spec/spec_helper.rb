@@ -7,10 +7,10 @@ require './spec/support/factory'
 require 'database_cleaner'
 require 'coveralls'
 Coveralls.wear!
-FactoryGirl.find_definitions
+FactoryBot.find_definitions
 
 RSpec.configure do |config|
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
