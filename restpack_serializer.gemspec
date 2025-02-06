@@ -19,6 +19,8 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'activesupport', ['>= 5.0.0', '< 7.1']
   gem.add_dependency 'activerecord', ['>= 5.0.0', '< 7.1']
+  # Concurrent Ruby 1.3.5+ does not work well with ActiveRecord/ActiveSupport v7.0 and lower
+  gem.add_dependency 'concurrent-ruby', '1.3.4'
   gem.add_dependency 'kaminari', '< 2.0'
 
   gem.add_development_dependency 'restpack_gem', '~> 0.0.9'
