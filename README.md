@@ -392,8 +392,7 @@ end
 
 ## Running Tests
 
-`bundle`
-`rake spec`
+`bundle exec rake test`
 
 #### Using docker
 `docker-compose build`
