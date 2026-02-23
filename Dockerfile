@@ -1,6 +1,6 @@
 FROM ruby:2.7-bullseye
 
-RUN apt-get update && apt-get install -y --no-install-recommends libsqlite3-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y nano vim
 
 WORKDIR /restpack
 
@@ -13,4 +13,3 @@ RUN bundle config --global jobs `cat /proc/cpuinfo | grep processor | wc -l | xa
     bundle install
 
 CMD ["bundle", "exec", "rake", "test"]
-

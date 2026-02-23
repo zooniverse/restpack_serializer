@@ -27,6 +27,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'guard-rspec', '~> 2.5.4'
   gem.add_development_dependency 'ffi', '< 1.17'
   gem.add_development_dependency 'factory_girl'
+  # sqlite3 v1.7+ requires Ruby 3+, so pin for this Ruby 2.7 branch.
   gem.add_development_dependency 'sqlite3', '< 1.7'
   gem.add_development_dependency 'database_cleaner', '~> 1.0.1'
   gem.add_development_dependency 'rspec'
