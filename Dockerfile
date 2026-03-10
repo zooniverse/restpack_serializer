@@ -1,4 +1,4 @@
-FROM ruby:2.5
+FROM ruby:2.7-bullseye
 
 RUN apt-get update && apt-get install -y nano vim
 
@@ -13,4 +13,3 @@ RUN bundle config --global jobs `cat /proc/cpuinfo | grep processor | wc -l | xa
     bundle install
 
 CMD ["bundle", "exec", "rake", "test"]
-
