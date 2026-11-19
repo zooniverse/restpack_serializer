@@ -1,4 +1,4 @@
-FROM ruby:2.7-bullseye
+FROM ruby:3.3-bookworm
 
 RUN apt-get update && apt-get install -y nano vim
 

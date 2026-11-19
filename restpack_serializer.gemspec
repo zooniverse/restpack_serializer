@@ -23,12 +23,11 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'kaminari', '< 2.0'
 
   gem.add_development_dependency 'restpack_gem', '~> 0.0.9'
-  gem.add_development_dependency 'rake', '~> 10.0.3'
-  gem.add_development_dependency 'guard-rspec', '~> 2.5.4'
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'guard-rspec'
   gem.add_development_dependency 'ffi', '< 1.17'
-  gem.add_development_dependency 'factory_girl'
-  # sqlite3 v1.7+ requires Ruby 3+, so pin for this Ruby 2.7 branch.
-  gem.add_development_dependency 'sqlite3', '< 1.7'
+  gem.add_development_dependency 'factory_bot'
+  gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'database_cleaner', '~> 1.0.1'
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'bump'
